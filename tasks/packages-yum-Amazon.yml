@@ -1,0 +1,25 @@
+#common/tasks/infra-packages.yml
+---
+- name: upgrade all packages
+  yum: name=* state=latest
+
+- name: install infrastructures packages
+  yum: name={{ item }} update_cache=yes  state=present
+  with_items:
+    - xfsprogs
+    - iptraf
+    - iotop
+    - vim
+    - htop
+    - python-pip
+    - tcpdump
+    - rsync
+    - mc
+    - screen
+    - cowsay
+    - jq
+    - iotop
+    - strace
+    - sysstat
+    - ntp
+    - git

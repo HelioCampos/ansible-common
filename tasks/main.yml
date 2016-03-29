@@ -1,0 +1,23 @@
+---
+# tasks file for common
+- fail: msg="The minimum Ansible version required to run is 2.0.1. To upgrade run 'sudo pip install --upgrade ansible'."
+  when: ansible_version.major|int != 2 and ansible_version.minor|int < 0 and ansible_version.revision|int < 1
+
+- name: Gather facts
+  action: ec2_facts
+
+- include: infra-stds.yml
+- include: swap.yml
+- include: syslog-graylog.yml
+
+# Amazon
+- include: packages-yum-Amazon.yml
+  when: ansible_distribution == 'Amazon'
+- include: timezone-Amazon.yml
+  when: ansible_distribution == 'Amazon'
+
+# Ubuntu
+- include: packages-apt-Ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+- include: timezone-Ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'

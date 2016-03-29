@@ -1,0 +1,39 @@
+#common/tasks/infra-packages.yml
+---
+- name: Gather facts
+  action: ec2_facts
+
+- hostname: name="{{ zabbix_metadata }}"
+  when: zabbix_metadata is defined
+
+- lineinfile: dest=/etc/hosts regexp='^127\.0\.0\.1' line='127.0.0.1 localhost {{ zabbix_metadata }}' owner=root group=root mode=0644
+  when: zabbix_metadata is defined
+
+- name: create opt/infra directory
+  file: path=/opt/infra state=directory
+
+- name: copy ch-hostname.sh script to /opt/infra
+  copy: src=scripts/ch-hostname.sh dest=/opt/infra/ch-hostname.sh owner=root group=root mode="0744"
+
+- name: configure script to startup (change hostname config)
+  lineinfile: dest=/etc/rc.local line="/opt/infra/ch-hostname.sh > /opt/infra/ch-hostname.log 2>&1"  insertbefore="^exit 0" state=present
+
+- name: ensure sysctl.conf is protected
+  file: path=/etc/sysctl.conf state=touch owner=root group=root mode=0440
+
+# remove sysctl bridge
+# error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+- lineinfile: dest=/etc/sysctl.conf regexp="^net\.bridge" insertbefore="^#net\.bridge" line=""
+- lineinfile: dest=/etc/sysctl.conf regexp="^net\.bridge" insertbefore="^#net\.bridge" line=""
+- lineinfile: dest=/etc/sysctl.conf regexp="^net\.bridge" insertbefore="^#net\.bridge" line=""
+
+# security
+
+- name: enable ulimit configuration - nofile (soft) - 1000000
+  lineinfile: dest=/etc/security/limits.conf line="* soft nofile 1000000"
+
+- name: enable ulimit configuration - nofile (soft) - 1000000
+  lineinfile: dest=/etc/security/limits.conf line="* hard nofile 1000000"
+
+- name: pam.d configuration
+  lineinfile: dest=/etc/pam.d/login line="session required pam_limits.so"

@@ -1,0 +1,25 @@
+---
+- name: upgrade all packages (ubuntu)
+  apt: update_cache=yes upgrade=dist
+
+- name: install infrastructures packages
+  apt: name={{ item }} update_cache=yes  state=present
+  with_items:
+    - xfsprogs
+    - iptraf
+    - iotop
+    - vim
+    - htop
+    - python-pip
+    - tcpdump
+    - rsync
+    - mc
+    - screen
+    - cowsay
+    - jq
+    - strace
+    - sysstat
+    - ntp
+    - ec2-api-tools
+    - awscli
+    - git

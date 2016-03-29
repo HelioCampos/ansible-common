@@ -1,0 +1,12 @@
+#common/tasks/timezone.yml
+---
+- name: Set timezone variables (Ubuntu)
+  copy: content='America/Sao_Paulo'
+        dest=/etc/timezone
+        owner=root
+        group=root
+        mode=0644
+        backup=yes
+
+- name: update timezone (Ubuntu)
+  command: dpkg-reconfigure --frontend noninteractive tzdata

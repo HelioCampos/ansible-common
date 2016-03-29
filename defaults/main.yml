@@ -1,0 +1,8 @@
+---
+# defaults file for common
+swapfile_size: 2048
+swapfile_swappiness: 0
+swapfile_location: /swapfile
+swapfile_create: true
+swapfile_vfs_cache_pressure: 100
+swapfile_use_dd: true

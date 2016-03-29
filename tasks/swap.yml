@@ -1,0 +1,34 @@
+- name: Write swapfile
+  command: |
+    {% if swapfile_use_dd %}
+    dd if=/dev/zero of={{ swapfile_location }} bs=1M count={{ swapfile_size }} creates={{ swapfile_location }}
+    {% else %}
+    fallocate -l {{ swapfile_size }} {{ swapfile_location }} creates={{ swapfile_location }}
+    {% endif %}
+  register: write_swapfile
+  when: swapfile_size != false and swapfile_create
+
+- name: Set swapfile permissions
+  file: path={{ swapfile_location }} mode=600
+  when: swapfile_size != false and swapfile_create
+
+- name: Create swapfile
+  command: mkswap {{ swapfile_location }}
+  register: create_swapfile
+  when: swapfile_size != false and write_swapfile.changed and swapfile_create
+
+- name: Enable swapfile
+  command: swapon {{ swapfile_location }}
+  when: swapfile_size != false and create_swapfile.changed and swapfile_create
+
+- name: Add swapfile to /etc/fstab
+  lineinfile: dest=/etc/fstab line="{{ swapfile_location }}   none    swap    sw    0   0" state=present
+  when: swapfile_size != false and swapfile_create
+
+- name: Configure vm.swappiness
+  sysctl: name="vm.swappiness" value={{ swapfile_swappiness }} sysctl_set=yes state=present reload=yes
+  when: swapfile_swappiness != false and swapfile_create
+
+- name: Configure vm.vfs_cache_pressure
+  sysctl: name="vm.vfs_cache_pressure" value={{ swapfile_vfs_cache_pressure }} sysctl_set=yes state=present reload=yes
+  when: swapfile_vfs_cache_pressure != false and swapfile_create

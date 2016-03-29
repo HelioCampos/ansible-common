@@ -1,0 +1,7 @@
+#common/tasks/timezone.yml
+---
+- name: set timezone /etc/sysconfig/clock (Amazon)
+  lineinfile: dest=/etc/sysconfig/clock regexp='^ZONE=' line='ZONE="America/Sao_Paulo"'
+
+- name: set timezone /etc/localtime (Amazon)
+  file: src=/usr/share/zoneinfo/America/Sao_Paulo dest=/etc/localtime state=link force=true
