@@ -1,9 +1,9 @@
 galaxy_info:
-  author: Giancarlo Rubio
+  author: Helio Campos Mello de Andrade
   categories:
   - development
-  description: Install VivaReal infra packages
-  company: VivaReal
+  description: Install Generic Company's infra packages
+  company: YOUR_COMPANY
   license: license (BSD)
   min_ansible_version: 2.0.1
   galaxy_tags:
